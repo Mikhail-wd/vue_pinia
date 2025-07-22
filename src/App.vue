@@ -5,17 +5,9 @@
   </div>
 </template>
 
-<script lang="ts">
-
+<script setup lang="ts">
 import AddingAccount from "./components/AddingAccounts.vue"
 import UsersList from "./components/UsersList.vue";
-
-export default {
-  components: {
-    AddingAccount,
-    UsersList
-  }
-}
 </script>
 
 <style>

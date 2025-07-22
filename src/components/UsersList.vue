@@ -1,4 +1,4 @@
-<template lang="">
+<template>
     <table class="table-fixed w-full">
         <thead>
             <tr  class="text-(--light-gray)">
@@ -17,20 +17,11 @@
     </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import User from "@/components/User.vue"
 import { useUsersStore } from "@/stores/store";
+const usersStore = useUsersStore()
 
-export default {
-    name: "UsersList",
-    components: {
-        User
-    },
-    setup() {
-        const usersStore = useUsersStore()
-        return { usersStore }
-    }
-}
 </script>
 
 <style lang="">

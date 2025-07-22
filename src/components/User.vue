@@ -2,12 +2,12 @@
     <tr>
         <td>
             <input placeholder="Название" class="p-2 w-9/10 box" maxlength="50" v-model="userInfo.tagName"
-                ref="tag-Name" />
+                ref="tag-Name" v-on:change="checkTag" />
         </td>
         <td class="flex flex-col wrap-nowrap w-9/10">
             <div class="p-2 w-9/10 box-target">
                 <p class="p-2 flex flex-raw wrap-nowrap items-center">
-                    <span>{{ setupDropdown == "local" ? "Локальная" : "LDAP" }}</span>
+                    <span>{{ userInfo.type == "local" ? "Локальная" : "LDAP" }}</span>
                     <img src="@/assets/chevron-down.svg" alt="chevron" class="w-[24px] h-[24px]">
                 </p>
                 <ul class="drop-down">
@@ -17,14 +17,14 @@
             </div>
         </td>
 
-        <template v-if="setupDropdown == 'ldap'">
+        <template v-if="userInfo.type == 'ldap'">
             <td colspan=2>
                 <input placeholder="Значение" class="p-2 w-9/10 box" required maxlength="100" ref="tag-login"
                     v-model="userInfo.login" v-on:blur="checkLogin" type="text" />
             </td>
         </template>
 
-        <template v-if="setupDropdown == 'local'">
+        <template v-if="userInfo.type == 'local'">
             <td>
                 <input placeholder="Значение" class="p-2 w-9/10 box " required maxlength="100" ref="tag-login"
                     v-model="userInfo.login" v-on:blur="checkLogin" />
@@ -42,7 +42,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, useTemplateRef } from 'vue';
+import { ref, watch, useTemplateRef, onMounted, computed } from 'vue';
 import { useUsersStore } from '@/stores/store';
 
 type userInfoObject = {
@@ -78,6 +78,8 @@ const userInfo = ref<userInfoObject>({
 
 function setDropDown(value: string) {
     setupDropdown.value = value
+    userInfo.value.type = value
+    usersList.changeType(userInfo.value.id, value)
 }
 
 function toggleShowPassword() {
@@ -87,8 +89,10 @@ function toggleShowPassword() {
 function checkPassword() {
     if (tagPassword.value !== null) {
         if (userInfo.value.password.length == 0) {
+            usersList.changePassword(userInfo.value.id, userInfo.value.password)
             tagPassword.value.className = "p-2 w-10/10 box password error"
         } else {
+            usersList.changePassword(userInfo.value.id, userInfo.value.password)
             tagPassword.value.className = "p-2 w-10/10 box password"
         }
     }
@@ -97,11 +101,19 @@ function checkPassword() {
 function checkLogin() {
     if (tagLogin.value !== null) {
         if (userInfo.value.login.length == 0) {
+            usersList.changeLogin(userInfo.value.id, userInfo.value.login)
             tagLogin.value.className = "p-2 w-9/10 box error"
         } else {
+            usersList.changeLogin(userInfo.value.id, userInfo.value.login)
             tagLogin.value.className = "p-2 w-9/10 box"
         }
     }
+}
+
+function checkTag() {
+    let tempArray: Array<{ text: string }> = []
+    tagName.value?.value.split(';').map(element => tempArray.push({ text: element }))
+    usersList.changeTagName(userInfo.value.id, tempArray)
 }
 
 watch(userInfo.value, () => {

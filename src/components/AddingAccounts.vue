@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full flex flex-col gap-5">
+    <div class="w-full flex flex-col gap-5 mt-5">
         <div class="flex flex-row gap-10 items-center">
             <h1 class="font-bold text-[24px]">Учетные записи</h1>
             <div class="border-solid border-1 rounded-[6px] border-(--main-blue)  p-[10px]" v-on:click="users.addUser">
