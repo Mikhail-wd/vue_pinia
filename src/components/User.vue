@@ -20,7 +20,7 @@
         <template v-if="setupDropdown == 'ldap'">
             <td colspan=2>
                 <input placeholder="Значение" class="p-2 w-9/10 box" required maxlength="100" ref="tag-login"
-                    v-model="userInfo.login" v-on:blur="checkLogin" />
+                    v-model="userInfo.login" v-on:blur="checkLogin" type="text" />
             </td>
         </template>
 
@@ -37,61 +37,80 @@
             </td>
         </template>
 
-        <td><img src="@/assets/trash.svg" alt="trash" /></td>
+        <td><img src="@/assets/trash.svg" alt="trash" v-on:click="usersList.removeUser(userInfo.id)" /></td>
     </tr>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { ref, watch, useTemplateRef } from 'vue';
+import { useUsersStore } from '@/stores/store';
 
-export default {
-    name: "User",
-    setup() {
-        const showPassword = ref(true)
-        const setupDropdown = ref("local")
-        const tagName = useTemplateRef("tag-Name")
-        const tagLogin = useTemplateRef("tag-login")
-        const tagPassword = useTemplateRef("tag-password")
+type userInfoObject = {
+    id: number,
+    tagName: string,
+    type: string,
+    login: string,
+    password: string
+}
 
-        const userInfo = ref({
-            id: 2,
-            tagName: "",
-            type: "local",
-            login: "",
-            password: ""
-        })
+const props = defineProps({
+    userInfo: {
+        type: Object,
+        required: true,
+        default: () => { }
+    }
+})
 
-        function setDropDown(value:string) {
-            setupDropdown.value = value
+const usersList = useUsersStore()
+const showPassword = ref(true)
+const setupDropdown = ref("local")
+const tagName = useTemplateRef<HTMLInputElement>("tag-Name")
+const tagLogin = useTemplateRef<HTMLInputElement>("tag-login")
+const tagPassword = useTemplateRef<HTMLInputElement>("tag-password")
+
+const userInfo = ref<userInfoObject>({
+    id: props.userInfo.id,
+    tagName: props.userInfo.tagName,
+    type: props.userInfo.type,
+    login: props.userInfo.login,
+    password: props.userInfo.password
+})
+
+function setDropDown(value: string) {
+    setupDropdown.value = value
+}
+
+function toggleShowPassword() {
+    showPassword.value = !showPassword.value
+}
+
+function checkPassword() {
+    if (tagPassword.value !== null) {
+        if (userInfo.value.password.length == 0) {
+            tagPassword.value.className = "p-2 w-10/10 box password error"
+        } else {
+            tagPassword.value.className = "p-2 w-10/10 box password"
         }
-        function toggleShowPassword() {
-            showPassword.value = !showPassword.value
-        }
-
-        function checkPassword() {
-            if (userInfo.value.password.length == 0) {
-                tagPassword.value.className = "p-2 w-10/10 box password error"
-            } else {
-                tagPassword.value.className = "p-2 w-10/10 box password"
-            }
-        }
-        function checkLogin() {
-            if (userInfo.value.login.length == 0) {
-                tagLogin.value.className = "p-2 w-9/10 box error"
-            } else {
-                 tagLogin.value.className = "p-2 w-9/10 box"
-            }
-        }
-
-        watch(userInfo.value, () => {
-            if (userInfo.value.tagName.length == 50) {
-                tagName.value.blur()
-            }
-        })
-
-        return { setupDropdown, userInfo, showPassword, tagName, setDropDown, toggleShowPassword, checkPassword, checkLogin }
     }
 }
+
+function checkLogin() {
+    if (tagLogin.value !== null) {
+        if (userInfo.value.login.length == 0) {
+            tagLogin.value.className = "p-2 w-9/10 box error"
+        } else {
+            tagLogin.value.className = "p-2 w-9/10 box"
+        }
+    }
+}
+
+watch(userInfo.value, () => {
+    if (tagName.value !== null) {
+        if (userInfo.value.tagName.length == 50) {
+            tagName.value.blur()
+        }
+    }
+})
 </script>
 
 <style scoped>
@@ -157,5 +176,9 @@ img:hover {
 
 .error {
     border: solid 1px red;
+}
+
+td {
+    padding: 5px 0 5px 0;
 }
 </style>

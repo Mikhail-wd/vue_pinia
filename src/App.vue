@@ -7,7 +7,7 @@
 
 <script lang="ts">
 
-import AddingAccount from "@/components/AddingAccounts.vue"
+import AddingAccount from "./components/AddingAccounts.vue"
 import UsersList from "./components/UsersList.vue";
 
 export default {
