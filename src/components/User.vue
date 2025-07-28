@@ -1,8 +1,8 @@
 <template ref="tagName">
     <tr>
         <td>
-            <input placeholder="Название" class="p-2 w-9/10 box" maxlength="50" v-model="userInfo.tagName"
-                ref="tag-Name" v-on:change="checkTag" />
+            <input placeholder="Название" class="p-2 w-9/10 box" maxlength="50" ref="tag-Name" v-on:change="checkTag"
+                :value="arrayStringing(props.userInfo.tagName)" />
         </td>
         <td class="flex flex-col wrap-nowrap w-9/10">
             <div class="p-2 w-9/10 box-target">
@@ -42,16 +42,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, useTemplateRef, onMounted, computed } from 'vue';
+import { ref, watch, useTemplateRef, onMounted, computed, type ComputedRef } from 'vue';
 import { useUsersStore } from '@/stores/store';
 
 type userInfoObject = {
     id: number,
-    tagName: string,
+    tagName?: string | [],
     type: string,
     login: string,
     password: string
 }
+
+
+
 
 const props = defineProps({
     userInfo: {
@@ -70,7 +73,6 @@ const tagPassword = useTemplateRef<HTMLInputElement>("tag-password")
 
 const userInfo = ref<userInfoObject>({
     id: props.userInfo.id,
-    tagName: props.userInfo.tagName,
     type: props.userInfo.type,
     login: props.userInfo.login,
     password: props.userInfo.password
@@ -118,11 +120,20 @@ function checkTag() {
 
 watch(userInfo.value, () => {
     if (tagName.value !== null) {
-        if (userInfo.value.tagName.length == 50) {
-            tagName.value.blur()
-        }
+        // if (userInfo.value.tagName.length == 50) {
+        //     tagName.value.blur()
+        // }
     }
 })
+
+function arrayStringing(value: Array<{ text: string }>) {
+    let parsedArray = JSON.parse(JSON.stringify(value))
+    let tempString = ""
+    parsedArray.map((elem: { text: string }) => {
+        tempString = tempString + elem.text + ";"
+    })
+    return tempString
+}
 </script>
 
 <style scoped>
